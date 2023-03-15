@@ -1,0 +1,39 @@
+version: '3.6'
+services:
+  nginx:
+    platform: linux/x86_64
+    container_name: web-server
+    image: nginx:latest
+    volumes:
+      - ./nginx/html/:/usr/share/nginx/html/
+      - ./nginx/conf/:/etc/nginx/conf.d/
+    ports:
+      - '127.0.0.1:80:80'
+    depends_on:
+      - php
+      - mysql
+
+  php:
+    platform: linux/x86_64
+    container_name: php-server
+    build:
+      context: .
+      dockerfile: php-dockerfile
+    volumes:
+      - ./nginx/html/:/usr/share/nginx/html/
+
+  mysql:
+    image: mariadb:10.9
+    container_name: mariadb-server
+    volumes:
+      - users_db:/var/lib/mysql
+      - ./mysql_conf/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      - ./mysql_conf/.my.cnf:/root/.my.cnf 
+    environment:
+        MYSQL_ROOT_USER: root
+        MYSQL_ROOT_PASSWORD: qazSedcS123
+    ports:
+      - 3306:3306
+
+volumes:
+  users_db: {}
