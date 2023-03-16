@@ -19,8 +19,10 @@ $conn = new mysqli($host, $user, $pass, $dbname, '3306');
 $result = $conn->query("SELECT COUNT(*) FROM users");
 $numRows = $result->fetch_row()[0];
 
+//$limit = $conn->query("SELECT *FROM users LIMIT 10");
 
+//echo "First 10 users $limit \n";
 
+echo "Total users $numRows \n";
 
-echo $numRows;
 ?>
