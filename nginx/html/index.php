@@ -5,6 +5,12 @@ $user = 'root';
 $pass = 'qazSedcS123';
 $dbname = 'prjctr';
 
+// Array of first names
+$firstNames = ['John', 'Mary', 'David', 'Jennifer', 'Michael', 'Sarah', 'Robert', 'Elizabeth', 'William', 'Jessica', 'Sofia', 'Candy', 'Ronald', 'Andy', 'Bill'];
+
+// Array of last names
+$lastNames = ['Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Cooper', 'Pitt'];
+
 // Create connection
 $conn = new mysqli($host, $user, $pass, $dbname, '3306');
 
@@ -52,4 +58,33 @@ if (isset($_GET["rand_month"])) {
     echo "\n Here is execution time of select users $execution_time born in a random month";
 }
 
+ if (isset($_GET["hash"])) {
+        mysqli_query($conn, "SET GLOBAL `innodb_adaptive_hash_index` = ".$_GET["hash"]);
+        exit;
+    }
+
+if (isset($_GET["insert"])) {
+        mysqli_query($conn, "SET GLOBAL `innodb_flush_log_at_trx_commit` = ".$_GET["insert"]);
+        $time_script = microtime(true);
+        for($i = 1; $i <= 10000 ; $i++) {
+            // Generate random name
+            $firstName = $firstNames[rand(0, count($firstNames) - 1)];
+            $lastName = $lastNames[rand(0, count($lastNames) - 1)];
+            $name = $firstName . ' ' . $lastName;
+
+            // Generate random birthday between January 1, 1900, and December 31, 2022
+            $start = strtotime('1900-01-01');
+            $end = strtotime('2022-12-31');
+            $randomDate = date('Y-m-d', rand($start, $end));
+
+            $values = "('$name','$randomDate')";
+
+            mysqli_query($conn,"INSERT INTO users (name,birthday) VALUES ".$values);
+
+        }
+        $result = (microtime(true) - $time_script) / 10000;
+
+        echo "avg insert time ".$result."<br>";
+        exit;
+    }
 ?>
